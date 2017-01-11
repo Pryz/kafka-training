@@ -4,7 +4,14 @@ services:
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
+  zkbrowser:
+    image: mijalko/zkbrowser
+    ports:
+      - "4550:4550"
   kafka:
+    #environment:
+    #  KAFKA_ADVERTISED_HOST_NAME: kafka
+    #hostname: kafka
     image: wurstmeister/kafka
     ports:
       - "9092"

@@ -1,53 +1,67 @@
 # Kafka training
 
-## Start cluster
+### Start cluster
 
-Start Zookeeper and 1 Kafka broker
+Start containers :
 
 ```
 docker-compose up
 ```
 
-## "Connect" to Kafka
+This will start :
+
+* A Zookeeper node listening on port 2181
+* A Kafka broker
+* A Zookeeper web app to browse the ZK content listening on 4550
+
+### "Connect" to Kafka
 
 ```
-docker exec -it docker_kafka_1
+docker exec -it docker_kafka_1 bash
 
 ps auxwww | grep kafka
 ```
 
-## Create topic
+All the command perform against Kafka will happen in this container.
+
+### Create lab42 topic
 
 ```
 /opt/kafka/bin/kafka-topics.sh --zookeeper zk:2181 --create --replication-factor 1 --partitions 1 --topic lab42
 ```
 
-## Produce to topic
+### Produce to lab42 topic
 
 ```
 echo "helloworld" | \
 /opt/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic lab42
 ```
 
-## Consume to topic
+### Consume from lab42 topic
 
 ```
 /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic lab42 --from-beginning
 ```
 
-## Audit cluster (list topics, leaders, ...)
+### Audit cluster (list topics, leaders, ...)
 
 ```
 /opt/kafka/bin/kafka-topics.sh --zookeeper zk:2181 --describe
 ```
 
-## Add two brokers in the cluster
+### Add two brokers in the cluster
 
 ```
 docker-compose scale kafka=3
 ```
 
-## Look at the current topic repartition
+### Add partitions to lab42 topic
+
+```
+/opt/kafka/bin/kafka-topics.sh --zookeeper zk:2181 --alter --topic lab42 --partitions 3
+```
+
+### Look at the current topic repartition
 
 ```
 docker exec -it docker_kafka_1
@@ -55,13 +69,36 @@ docker exec -it docker_kafka_1
 /opt/kafka/bin/kafka-topics.sh --zookeeper zk:2181 --describe --topic lab42
 ```
 
-## Change leader
+### Change leader
+
+Create a file like the following :
 
 ```
+$ cat topics-to-move.json
+{
+  "topics": [{"topic": "lab42"}],
+  "version":1
+}
 ```
 
-## Edit topic
+Generate a new assigment :
 
 ```
+/opt/kafka/bin/kafka-reassign-partitions.sh --zookeeper zk:2181 --topics-to-move-json-file topics-to-move.json --broker-list "1002,1003,1004" --generate
 ```
 
+`--broker-list` is the list of Kafka broker IDs you are targeting for the re-assignment. See the list in Zookeeper : [http://localhost:4550/?path=brokers%2Fids](http://localhost:4550/?path=brokers%2Fids)
+
+This will generate a new assigment. You will have to put it in a file. Say new-assignment.json and tweak it if needed. At this point you can define exactly who will be the leader of every partitions.
+
+Then you can apply the new assignement :
+
+```
+/opt/kafka/bin/kafka-reassign-partitions.sh --zookeeper zk:2181 --reassignment-json-file new-assignment.json --execute
+```
+
+You will be able to follow the status of the reassigment process with the following command :
+
+```
+/opt/kafka/bin/kafka-reassign-partitions.sh --zookeeper zk:2181 --reassignment-json-file new-assignment.json --verify
+```
