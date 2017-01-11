@@ -1,5 +1,16 @@
 # Kafka training
 
+The purpose of this training is to give you a starting point to use and experiment with Kafka.
+
+## Resources
+
+Some interesting resources :
+
+* The official Kafka documentation : [https://kafka.apache.org/documentation/](https://kafka.apache.org/documentation/)
+* A training Deck of Kafka 0.8 : [http://www.slideshare.net/miguno/apache-kafka-08-basic-training-verisign](http://www.slideshare.net/miguno/apache-kafka-08-basic-training-verisign)
+* Monitoring Kafka from Datadog folks : [https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/](https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/)
+* Interesting reading for a Production deployment from Confluent : [http://docs.confluent.io/3.1.1/schema-registry/docs/deployment.html?highlight=production](http://docs.confluent.io/3.1.1/schema-registry/docs/deployment.html?highlight=production)
+
 ### Start cluster
 
 Start containers :
@@ -12,7 +23,9 @@ This will start :
 
 * A Zookeeper node listening on port 2181
 * A Kafka broker
-* A Zookeeper web app to browse the ZK content listening on 4550
+* A Zookeeper web app to browse the ZK content listening on 4550. ([http://localhost:4550](http://localhost:4550)) from your web browser.
+
+The Input connection string for the ZK browser will be : zk:2181.
 
 ### "Connect" to Kafka
 
