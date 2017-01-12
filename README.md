@@ -200,3 +200,11 @@ To make sure it's done :
 ```
 /opt/kafka/bin/kafka-reassign-partitions.sh --zookeeper zk:2181 --reassignment-json-file replication-factor.json --verify
 ```
+
+## Going further
+
+This training is really about the basics of Kafka, if you want to learn more here is some resources :
+
+* Kafka MirrorMaker : MirrorMaker is used to build cross datacenter replication with Kafka. See : [https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27846330](https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27846330)
+* Uber implemented there own MirrorMaker, the project is called uReplicator. See : [https://eng.uber.com/ureplicator](https://eng.uber.com/ureplicator)
+
