@@ -6,10 +6,13 @@ The purpose of this training is to give you a starting point to use and experime
 
 Some interesting resources :
 
-* The official Kafka documentation : [https://kafka.apache.org/documentation/](https://kafka.apache.org/documentation/)
+* The official Kafka documentation : [https://kafka.apache.org/documentation/](https://kafka.apache.org/documentation/). You should at least read the [getting started](http://kafka.apache.org/documentation/#gettingStarted<Paste>) and [design](http://kafka.apache.org/documentation/#design) sections. 
 * A training Deck of Kafka 0.8 : [http://www.slideshare.net/miguno/apache-kafka-08-basic-training-verisign](http://www.slideshare.net/miguno/apache-kafka-08-basic-training-verisign)
 * Monitoring Kafka from Datadog folks : [https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/](https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/)
 * Interesting reading for a Production deployment from Confluent : [http://docs.confluent.io/3.1.1/schema-registry/docs/deployment.html?highlight=production](http://docs.confluent.io/3.1.1/schema-registry/docs/deployment.html?highlight=production)
+* Kafka replication - a lesson in operational simplicity : [https://www.confluent.io/blog/hands-free-kafka-replication-a-lesson-in-operational-simplicity](https://www.confluent.io/blog/hands-free-kafka-replication-a-lesson-in-operational-simplicity)
+
+You don't have to read ALL of these before starting playing with the lab. But these are definitelly articles where you will find a lot of information to answer your question and learn more about Kafka.
 
 ### Requirements 
 
