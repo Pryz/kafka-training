@@ -89,6 +89,8 @@ In production you will want to use the option `--under-replicated` to list all t
 
 Really good article about replication : [https://www.confluent.io/blog/hands-free-kafka-replication-a-lesson-in-operational-simplicity](https://www.confluent.io/blog/hands-free-kafka-replication-a-lesson-in-operational-simplicity)
 
+From here, you can start playing with the `consumer` and `production` Go app example here : [https://github.com/Pryz/kafka-training/tree/master/goclient](https://github.com/Pryz/kafka-training/tree/master/goclient)
+
 ### Add two brokers in the cluster
 
 Let's scale the cluster by adding 2 more Kafka brokers :
