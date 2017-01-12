@@ -106,6 +106,20 @@ docker-compose scale kafka=3
 
 Within Zookeeper (using the ZK browser), you will get details about each Broker : [http://localhost:4550/?path=brokers%2Fids](http://localhost:4550/?path=brokers%2Fids)
 
+You will also be able to see the `controller` of your Kafka cluster. See : [http://localhost:4550/?path=controller](http://localhost:4550/?path=controller)
+
+For example :
+
+```
+{"version":1,"brokerid":1001,"timestamp":"1484245579701"}
+```
+
+This mean that the broker with the ID 1001 is the controller. You will get information about the broker 1001 here : [http://localhost:4550/?path=brokers%2Fids%2F1001](http://localhost:4550/?path=brokers%2Fids%2F1001)
+
+```
+{"jmx_port":-1,"timestamp":"1484245580054","endpoints":["PLAINTEXT://192.168.66.84:32773"],"host":"192.168.66.84","version":3,"port":32773}
+```
+
 ### Add partitions to lab42 topic
 
 We have 3 brokers now, let's scale the topic and add more partitions :
