@@ -11,11 +11,24 @@ Some interesting resources :
 * Monitoring Kafka from Datadog folks : [https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/](https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/)
 * Interesting reading for a Production deployment from Confluent : [http://docs.confluent.io/3.1.1/schema-registry/docs/deployment.html?highlight=production](http://docs.confluent.io/3.1.1/schema-registry/docs/deployment.html?highlight=production)
 
+### Requirements 
+
+* Install Docker and Docker Compose
+* Clone this repository on your laptop
+
 ### Start cluster
+
+```
+cd docker
+```
+
+You will first need to change the docker-compose.yml file and change KAFKA_ADVERTISED_HOST_NAME with the IP of your Docker Host.
+If you are using `Docker for Mac` it will probably be your local IP, if you are using Boot2docker, it will be the IP for the VirtualBox instance, etc
 
 Start containers :
 
 ```
+cd docker
 docker-compose up
 ```
 
@@ -29,21 +42,27 @@ The Input connection string for the ZK browser will be : zk:2181.
 
 ### "Connect" to Kafka
 
+Since we are using Docker containers for this training, we will execute a bash process inside the Kafka container to perform all the actions.
+
 ```
 docker exec -it docker_kafka_1 bash
 
 ps auxwww | grep kafka
 ```
 
-All the command perform against Kafka will happen in this container.
+You should see a Kafka process up and running.
 
 ### Create lab42 topic
+
+Let's create a simple topic :
 
 ```
 /opt/kafka/bin/kafka-topics.sh --zookeeper zk:2181 --create --replication-factor 1 --partitions 1 --topic lab42
 ```
 
 ### Produce to lab42 topic
+
+From here, you should already be able to write something in the new topic :
 
 ```
 echo "helloworld" | \
@@ -52,23 +71,37 @@ echo "helloworld" | \
 
 ### Consume from lab42 topic
 
+Easy to produce but also easy to read from that topic :
+
 ```
 /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic lab42 --from-beginning
 ```
 
 ### Audit cluster (list topics, leaders, ...)
 
+`--describe` command will list you all the current topic and the leader and replicas of every partitions :
+
 ```
 /opt/kafka/bin/kafka-topics.sh --zookeeper zk:2181 --describe
 ```
 
+In production you will want to use the option `--under-replicated` to list all the under replicated partitions.
+
+Really good article about replication : [https://www.confluent.io/blog/hands-free-kafka-replication-a-lesson-in-operational-simplicity](https://www.confluent.io/blog/hands-free-kafka-replication-a-lesson-in-operational-simplicity)
+
 ### Add two brokers in the cluster
+
+Let's scale the cluster by adding 2 more Kafka brokers :
 
 ```
 docker-compose scale kafka=3
 ```
 
+Within Zookeeper (using the ZK browser), you will get details about each Broker : [http://localhost:4550/?path=brokers%2Fids](http://localhost:4550/?path=brokers%2Fids)
+
 ### Add partitions to lab42 topic
+
+We have 3 brokers now, let's scale the topic and add more partitions :
 
 ```
 /opt/kafka/bin/kafka-topics.sh --zookeeper zk:2181 --alter --topic lab42 --partitions 3
@@ -76,9 +109,9 @@ docker-compose scale kafka=3
 
 ### Look at the current topic repartition
 
-```
-docker exec -it docker_kafka_1
+From here, every broker should be leader of one partitions :
 
+```
 /opt/kafka/bin/kafka-topics.sh --zookeeper zk:2181 --describe --topic lab42
 ```
 
@@ -114,4 +147,35 @@ You will be able to follow the status of the reassigment process with the follow
 
 ```
 /opt/kafka/bin/kafka-reassign-partitions.sh --zookeeper zk:2181 --reassignment-json-file new-assignment.json --verify
+```
+
+### Increase the replication factor of a topic 
+
+Usually you don't do this task in Production. You directly define the replication factor when you create  the topic.
+
+But if you have to increase the replication factor, you will need to use the reassigment tool. 
+
+```
+$ cat replication-factor.json
+{"version":1,
+"partitions":[
+  {"topic":"lab42","partition":0,"replicas":[1001,1002,1003]},
+  {"topic":"lab42","partition":1,"replicas":[1002,1003,1001]},
+  {"topic":"lab42","partition":2,"replicas":[1003,1001,1002]}
+]
+}
+```
+
+Replicas is a list of broker IDs. As said before, you will find all the Broker IDs in ZK : [http://localhost:4550/?path=brokers%2Fids](http://localhost:4550/?path=brokers%2Fids)
+
+Here, we will increase the replication factor to 3 and properly balance partitions across the cluster.
+
+```
+/opt/kafka/bin/kafka-reassign-partitions.sh --zookeeper zk:2181 --reassignment-json-file replication-factor.json --execute
+```
+
+To make sure it's done :
+
+```
+/opt/kafka/bin/kafka-reassign-partitions.sh --zookeeper zk:2181 --reassignment-json-file replication-factor.json --verify
 ```
