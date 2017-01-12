@@ -25,7 +25,7 @@ You don't have to read ALL of these before starting playing with the lab. But th
 cd docker
 ```
 
-You will first need to change the docker-compose.yml file and change KAFKA_ADVERTISED_HOST_NAME with the IP of your Docker Host.
+You will first need to change the `docker-compose.yml` file and change `KAFKA_ADVERTISED_HOST_NAME` with the IP of your Docker Host.
 If you are using `Docker for Mac` it will probably be your local IP, if you are using Boot2docker, it will be the IP for the VirtualBox instance, etc
 
 Start containers :
