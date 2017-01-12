@@ -151,6 +151,7 @@ To remove the retention config :
 ```
 
 There is two kinds of topics : retention based and compacted. Retention based will keep your messages during a certain amount of time.
+
 Compacted will "compact" your topics based on keys. See : [http://kafka.apache.org/documentation.html#compaction](http://kafka.apache.org/documentation.html#compaction)
 
 ### Change leader
