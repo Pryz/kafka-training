@@ -41,6 +41,8 @@ This will start :
 * A Kafka broker
 * A Zookeeper web app to browse the ZK content listening on 4550. ([http://localhost:4550](http://localhost:4550)) from your web browser.
 
+You will have to wait few seconds to see all your containers up and running.
+
 The Input connection string for the ZK browser will be : zk:2181.
 
 ### "Connect" to Kafka
