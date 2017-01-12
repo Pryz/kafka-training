@@ -136,6 +136,20 @@ From here, every broker should be leader of one partitions :
 /opt/kafka/bin/kafka-topics.sh --zookeeper zk:2181 --describe --topic lab42
 ```
 
+### Setup a time retention on your topic
+
+For some needs, you may want to setup a retention on your topic. Messages you will automatically clean up at the end of the TTL.
+
+```
+/opt/kafka/bin/kafka-topics.sh --zookeeper zk:2181 --alter --topic lab42 --config retention.ms=60000
+```
+
+To remove the retention config :
+
+```
+/opt/kafka/bin/kafka-topics.sh --zookeeper zk:2181 --alter --topic lab42 --delete-config retention.ms
+```
+
 ### Change leader
 
 Create a file like the following :
