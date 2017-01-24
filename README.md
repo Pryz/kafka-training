@@ -1,6 +1,8 @@
 # Kafka training
 
-The purpose of this training is to give you a starting point to use and experiment with Kafka.
+The purpose of this training is to give you a starting point to use and experiment with Kafka. It's like a big RTFM with a tiny lab on Docker :)
+
+I will probably add more links over time. If you have some good resources, please create a PR or open an issue ;)
 
 ## Resources
 
