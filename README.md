@@ -6,7 +6,7 @@ The purpose of this training is to give you a starting point to use and experime
 
 Some interesting resources :
 
-* The official Kafka documentation : [https://kafka.apache.org/documentation/](https://kafka.apache.org/documentation/). You should at least read the [getting started](http://kafka.apache.org/documentation/#gettingStarted<Paste>) and [design](http://kafka.apache.org/documentation/#design) sections. 
+* The official Kafka documentation : [https://kafka.apache.org/documentation/](https://kafka.apache.org/documentation/). You should at least read the [getting started](http://kafka.apache.org/documentation/#gettingStarted<Paste>) and [design](http://kafka.apache.org/documentation/#design) sections.
 * A training Deck of Kafka 0.8 : [http://www.slideshare.net/miguno/apache-kafka-08-basic-training-verisign](http://www.slideshare.net/miguno/apache-kafka-08-basic-training-verisign)
 * Monitoring Kafka from Datadog folks : [https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/](https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/)
 * Interesting reading for a Production deployment from Confluent : [http://docs.confluent.io/3.1.1/schema-registry/docs/deployment.html?highlight=production](http://docs.confluent.io/3.1.1/schema-registry/docs/deployment.html?highlight=production)
@@ -14,7 +14,7 @@ Some interesting resources :
 
 You don't have to read ALL of these before starting playing with the lab. But these are definitelly articles where you will find a lot of information to answer your question and learn more about Kafka.
 
-### Requirements 
+### Requirements
 
 * Install Docker and Docker Compose
 * Clone this repository on your laptop
@@ -120,6 +120,17 @@ This mean that the broker with the ID 1001 is the controller. You will get infor
 {"jmx_port":-1,"timestamp":"1484245580054","endpoints":["PLAINTEXT://192.168.66.84:32773"],"host":"192.168.66.84","version":3,"port":32773}
 ```
 
+#### Why would we want to add new broker ?
+
+Adding brokers can have multiple benefits :
+
+1. You will be able to increase the replication factor. So the data will be duplicated in multiple places.
+2. You will be able to handle more requests.
+
+`min.insync.replicas` : if you have less in-sync replicas than this value, the topic will be in "read-only".
+
+> When used together, min.insync.replicas and acks allow you to enforce greater durability guarantees. A typical scenario would be to create a topic with a replication factor of 3, set min.insync.replicas to 2, and produce with acks of "all". This will ensure that the producer raises an exception if a majority of replicas do not receive a write.
+
 ### Add partitions to lab42 topic
 
 We have 3 brokers now, let's scale the topic and add more partitions :
@@ -127,6 +138,11 @@ We have 3 brokers now, let's scale the topic and add more partitions :
 ```
 /opt/kafka/bin/kafka-topics.sh --zookeeper zk:2181 --alter --topic lab42 --partitions 3
 ```
+
+#### Why do we need to scale partitions ?
+
+You will want to add more paritions if you need to increase Kafka throughput.
+A good article about this question : [How to choose the number of topics/partitions in a Kafka cluster](https://www.confluent.io/blog/how-to-choose-the-number-of-topicspartitions-in-a-kafka-cluster)
 
 ### Look at the current topic repartition
 
@@ -188,11 +204,37 @@ You will be able to follow the status of the reassigment process with the follow
 /opt/kafka/bin/kafka-reassign-partitions.sh --zookeeper zk:2181 --reassignment-json-file new-assignment.json --verify
 ```
 
-### Increase the replication factor of a topic 
+#### Why would we want to change leader?
+
+To understand why, you first need to understand what the leader does. Leaders are used to distribute the load. Basically every partition has a single leader. The leader is responsible for every read and write requests for this partition.
+
+When you run the `--describe` command you will see something like :
+
+```
+Topic:event_data	PartitionCount:3	ReplicationFactor:3	Configs:retention.ms=7200000
+	Topic: event_data	Partition: 0	Leader: 1001	Replicas: 1001,1002,1003	Isr: 1001,1002,1003
+	Topic: event_data	Partition: 1	Leader: 1002	Replicas: 1002,1003,1001	Isr: 1002,1003,1001
+	Topic: event_data	Partition: 2	Leader: 1003	Replicas: 1003,1001,1002	Isr: 1003,1001,1002
+
+```
+
+Basically here we have :
+
+* One topic named "event_data"
+* 3 partitions for this topic with 3 different leaders
+* Replication factor 3
+
+This mean basically that your read and write requests should be properly distributed for your producers and consumers.
+
+If one leader goes down, the first follower will take the leadership.
+
+If you need some nice diagrams, check this article : [Kafka in a nutshell](https://sookocheff.com/post/kafka/kafka-in-a-nutshell/#producers).
+
+### Increase the replication factor of a topic
 
 Usually you don't do this task in Production. You directly define the replication factor when you create  the topic.
 
-But if you have to increase the replication factor, you will need to use the reassigment tool. 
+But if you have to increase the replication factor, you will need to use the reassigment tool.
 
 ```
 $ cat replication-factor.json
@@ -225,4 +267,3 @@ This training is really about the basics of Kafka, if you want to learn more her
 
 * Kafka MirrorMaker : MirrorMaker is used to build cross datacenter replication with Kafka. See : [https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27846330](https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27846330)
 * Uber implemented there own MirrorMaker, the project is called uReplicator. See : [https://eng.uber.com/ureplicator](https://eng.uber.com/ureplicator)
-
